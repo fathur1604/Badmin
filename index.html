@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="BadmintonKu — Aplikasi untuk mengorganisir pertandingan badminton casual bersama teman-teman. Acak tim, catat skor, dan lihat leaderboard.">
+  <meta name="theme-color" content="#0a0a1a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>BadmintonKu — Organisir Pertandingan Badminton</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏸</text></svg>">
+</head>
+<body>
+
+  <div id="app">
+    <!-- ===== Header ===== -->
+    <header class="page-header">
+      <div class="logo">
+        <span class="logo-icon">🏸</span>
+        <span class="text-gradient">BadmintonKu</span>
+      </div>
+      <div id="header-badge" class="badge badge-accent">
+        <span id="stat-present-header">0</span> hadir
+      </div>
+    </header>
+
+    <!-- ===== Page Content ===== -->
+    <main class="page-content">
+
+      <!-- ────── HOME ────── -->
+      <section id="section-home" class="page-section active">
+        <!-- Quick Stats -->
+        <div class="quick-stats mb-lg">
+          <div class="quick-stat">
+            <div class="quick-stat-value text-gradient" id="stat-total-players">0</div>
+            <div class="quick-stat-label">Total Pemain</div>
+          </div>
+          <div class="quick-stat">
+            <div class="quick-stat-value" style="color:var(--accent-primary)" id="stat-present">0</div>
+            <div class="quick-stat-label">Hadir</div>
+          </div>
+          <div class="quick-stat">
+            <div class="quick-stat-value" style="color:var(--accent-secondary)" id="stat-today-matches">0</div>
+            <div class="quick-stat-label">Main Hari Ini</div>
+          </div>
+        </div>
+
+        <!-- Add Player -->
+        <div class="section-title">Tambah Pemain</div>
+        <div class="input-group mb-lg">
+          <input type="text" class="input" id="player-name-input"
+                 placeholder="Nama pemain..." maxlength="20" autocomplete="off">
+          <button class="btn btn-primary" onclick="Players.addPlayer()">
+            + Tambah
+          </button>
+        </div>
+
+        <!-- Player List -->
+        <div class="flex-between mb-md">
+          <div class="section-title" style="margin-bottom:0">Daftar Pemain</div>
+          <div class="flex-center gap-sm">
+            <span id="present-count" class="badge badge-accent">0 hadir</span>
+            <button class="btn btn-ghost btn-sm" onclick="Players.toggleAllPresence(true)" title="Hadirkan semua">✅</button>
+            <button class="btn btn-ghost btn-sm" onclick="Players.toggleAllPresence(false)" title="Kosongkan semua">⬜</button>
+          </div>
+        </div>
+
+        <div id="players-list" class="player-list"></div>
+      </section>
+
+      <!-- ────── RANDOMIZER ────── -->
+      <section id="section-randomizer" class="page-section">
+        <div class="flex-between mb-lg">
+          <h2>🎲 Acak Tim</h2>
+          <button id="fair-toggle" class="btn btn-sm btn-secondary active" onclick="Randomizer.toggleFairMode()" style="font-size:0.75rem">
+            🔄 Fair Mode: ON
+          </button>
+        </div>
+
+        <!-- Mode Selector -->
+        <div class="mode-selector mb-md">
+          <button class="mode-btn active" data-mode="double" onclick="Randomizer.setMode('double')">
+            👥 Double (2v2)
+          </button>
+          <button class="mode-btn" data-mode="single" onclick="Randomizer.setMode('single')">
+            👤 Single (1v1)
+          </button>
+        </div>
+
+        <!-- Info -->
+        <div id="randomizer-info" class="card card-sm mb-lg" style="font-size:0.8125rem;text-align:center">
+        </div>
+
+        <!-- Shuffle Button -->
+        <button id="shuffle-btn" class="btn btn-primary btn-lg btn-block" onclick="Randomizer.doShuffle()">
+          🎲 Acak Sekarang!
+        </button>
+
+        <!-- Result -->
+        <div id="randomizer-result" class="randomizer-result"></div>
+      </section>
+
+      <!-- ────── MATCH ────── -->
+      <section id="section-match" class="page-section">
+        <h2 class="mb-lg">📝 Pertandingan</h2>
+
+        <!-- Active Scoreboard -->
+        <div id="match-scoreboard-area"></div>
+
+        <!-- History -->
+        <div class="section-title mt-xl">Riwayat Pertandingan</div>
+        <div id="match-history"></div>
+      </section>
+
+      <!-- ────── STATS ────── -->
+      <section id="section-stats" class="page-section">
+        <h2 class="mb-lg">📊 Leaderboard</h2>
+
+        <div id="stats-content"></div>
+      </section>
+
+      <!-- ────── KAS ────── -->
+      <section id="section-kas" class="page-section">
+        <div class="flex-between mb-lg">
+          <h2>💰 Kas & Iuran</h2>
+          <button class="btn btn-primary btn-sm" onclick="Kas.showNewSessionModal()">+ Sesi Baru</button>
+        </div>
+
+        <!-- Summary -->
+        <div id="kas-summary"></div>
+
+        <!-- Session List -->
+        <div class="section-title">Riwayat Sesi</div>
+        <div id="kas-sessions"></div>
+      </section>
+
+    </main>
+
+    <!-- ===== Bottom Navigation ===== -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-tab="home">
+        <span class="nav-item-icon">🏠</span>
+        <span>Beranda</span>
+      </button>
+      <button class="nav-item" data-tab="randomizer">
+        <span class="nav-item-icon">🎲</span>
+        <span>Acak Tim</span>
+      </button>
+      <button class="nav-item" data-tab="match">
+        <span class="nav-item-icon">📝</span>
+        <span>Main</span>
+      </button>
+      <button class="nav-item" data-tab="stats">
+        <span class="nav-item-icon">📊</span>
+        <span>Statistik</span>
+      </button>
+      <button class="nav-item" data-tab="kas">
+        <span class="nav-item-icon">💰</span>
+        <span>Kas</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ===== Modal Overlay ===== -->
+  <div id="modal-overlay" class="modal-overlay">
+    <div class="modal">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="modal-title"></div>
+      <div id="modal-body"></div>
+      <div class="modal-actions" id="modal-actions"></div>
+    </div>
+  </div>
+
+  <!-- ===== Winner Overlay ===== -->
+  <div id="winner-overlay" class="winner-overlay">
+    <div class="winner-trophy">🏆</div>
+    <div class="winner-text">Pemenangnya adalah...</div>
+    <div class="winner-name" id="winner-name-display"></div>
+  </div>
+
+  <!-- ===== Toast Container ===== -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- ===== Scripts ===== -->
+  <script src="js/storage.js"></script>
+  <script src="js/players.js"></script>
+  <script src="js/randomizer.js"></script>
+  <script src="js/match.js"></script>
+  <script src="js/stats.js"></script>
+  <script src="js/kas.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
